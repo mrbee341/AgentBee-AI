@@ -1,4 +1,4 @@
-import { and, count, desc, eq, sql } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, sql } from 'drizzle-orm';
 import { db } from '../db/client.js';
 import { facts, messages } from '../db/schema.js';
 import type { FactCandidate } from './extract.js';
@@ -78,6 +78,35 @@ export async function correctFact(userId: string, key: string, value: string): P
     .where(and(eq(facts.key, key), eq(facts.userId, userId)))
     .returning({ id: facts.id });
   return updated.length > 0;
+}
+
+export async function saveRememberedFact(userId: string, key: string, value: string): Promise<void> {
+  await db
+    .insert(facts)
+    .values({ userId, key, value, confidence: 1, pinned: true })
+    .onConflictDoUpdate({
+      target: [facts.userId, facts.key],
+      set: { value, confidence: 1, pinned: true },
+    });
+}
+
+export async function findFactsMatching(userId: string, query: string, limit: number) {
+  const escaped = query.replace(/[\\%_]/g, (char) => `\\${char}`);
+  return db
+    .select({ id: facts.id, value: facts.value })
+    .from(facts)
+    .where(and(eq(facts.userId, userId), sql`${facts.value} ILIKE ${`%${escaped}%`}`))
+    .orderBy(desc(facts.createdAt))
+    .limit(limit);
+}
+
+export async function deleteFacts(userId: string, factIds: string[]): Promise<number> {
+  if (factIds.length === 0) return 0;
+  const deleted = await db
+    .delete(facts)
+    .where(and(eq(facts.userId, userId), inArray(facts.id, factIds)))
+    .returning({ id: facts.id });
+  return deleted.length;
 }
 
 export async function deleteFact(userId: string, factId: string): Promise<boolean> {

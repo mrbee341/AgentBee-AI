@@ -4,6 +4,7 @@ import { recordMessage } from '../db/messages.js';
 import { extractFacts } from '../memory/extract.js';
 import { upsertExtractedFacts } from '../memory/facts.js';
 import { handleCorrectionReply } from './brain.js';
+import { handleApprovalReply } from './approvals.js';
 
 export function registerTextHandler(bot: Bot) {
   bot.on('message:text', async (ctx) => {
@@ -13,6 +14,7 @@ export function registerTextHandler(bot: Bot) {
     const text = ctx.message.text;
     if (text.startsWith('/')) return;
     if (await handleCorrectionReply(ctx)) return;
+    if (await handleApprovalReply(ctx)) return;
 
     const userId = await ensureUser(ctx.from);
     const messageId = await recordMessage({
