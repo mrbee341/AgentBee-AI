@@ -18,6 +18,8 @@ export const BOT_COMMANDS = [
   { command: 'write', description: 'Save a workspace file (needs approval)' },
   { command: 'read', description: 'Read a workspace file' },
   { command: 'ls', description: 'List workspace files' },
+  { command: 'search', description: 'Look up quick answers on the web' },
+  { command: 'fetch', description: 'Read the text of a public web page' },
 ];
 
 registerStartHandler(bot);

@@ -5,6 +5,7 @@ import { approvalScreen } from '../approvals/card.js';
 import { createIntent, issueToken, setIntentCardMessage } from '../approvals/ledger.js';
 import { WRITE_TOOLS } from '../tools/write-tools.js';
 import { listWorkspaceDir, readWorkspaceFile } from '../tools/read-tools.js';
+import { fetchPage, webSearch } from '../tools/web.js';
 
 const WRITE_USAGE = 'Usage: /write <path> <contents>. Paths use letters, numbers, dots, dashes and slashes.';
 const READ_USAGE = 'Usage: /read <path>';
@@ -47,6 +48,35 @@ export function registerToolHandlers(bot: Bot) {
     const userId = await ensureUser(ctx.from);
     await ctx.reply(await listWorkspaceDir(userId));
   });
+
+  bot.command('search', async (ctx) => {
+    if (!(await requirePrivate(ctx))) return;
+    const query = ctx.match.trim();
+    if (!query) {
+      await ctx.reply('Usage: /search <words>');
+      return;
+    }
+    await ctx.reply(await runReadTool('search', () => webSearch(query)));
+  });
+
+  bot.command('fetch', async (ctx) => {
+    if (!(await requirePrivate(ctx))) return;
+    const url = ctx.match.trim();
+    if (!url) {
+      await ctx.reply('Usage: /fetch <https address>');
+      return;
+    }
+    await ctx.reply(await runReadTool('fetch', () => fetchPage(url)));
+  });
+}
+
+async function runReadTool(label: string, run: () => Promise<string>): Promise<string> {
+  try {
+    return await run();
+  } catch (err) {
+    console.error(`${label} tool failed:`, err);
+    return `That ${label} could not be completed. ${err instanceof Error ? err.message : ''}`.trim();
+  }
 }
 
 async function requirePrivate(ctx: Context): Promise<boolean> {
