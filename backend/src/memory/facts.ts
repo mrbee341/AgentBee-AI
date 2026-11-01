@@ -80,6 +80,15 @@ export async function correctFact(userId: string, key: string, value: string): P
   return updated.length > 0;
 }
 
+export async function listPinnedFacts(userId: string, limit: number) {
+  return db
+    .select({ id: facts.id, value: facts.value })
+    .from(facts)
+    .where(and(eq(facts.userId, userId), eq(facts.pinned, true)))
+    .orderBy(desc(facts.createdAt))
+    .limit(limit);
+}
+
 export async function saveRememberedFact(userId: string, key: string, value: string): Promise<void> {
   await db
     .insert(facts)

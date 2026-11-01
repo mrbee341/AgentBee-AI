@@ -5,6 +5,7 @@ import { extractFacts } from '../memory/extract.js';
 import { upsertExtractedFacts } from '../memory/facts.js';
 import { handleCorrectionReply } from './brain.js';
 import { handleApprovalReply } from './approvals.js';
+import { runAgentTurn } from '../ai/orchestrator.js';
 
 export function registerTextHandler(bot: Bot) {
   bot.on('message:text', async (ctx) => {
@@ -31,5 +32,14 @@ export function registerTextHandler(bot: Bot) {
         console.error('Fact distillation failed:', err);
       });
     }
+
+    void runAgentTurn({
+      api: ctx.api,
+      userId,
+      chatId,
+      sourceMessageId: ctx.message.message_id,
+      currentMessageId: messageId,
+      text,
+    });
   });
 }

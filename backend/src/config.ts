@@ -14,4 +14,5 @@ export const config = {
   PORT: Number(process.env.PORT ?? 3000),
   WEBHOOK_URL: process.env.WEBHOOK_URL || undefined,
   WEBHOOK_SECRET: process.env.WEBHOOK_SECRET || undefined,
+  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || undefined,
 };
