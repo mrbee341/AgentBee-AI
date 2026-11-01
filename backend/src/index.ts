@@ -1,6 +1,6 @@
 import express from 'express';
 import { webhookCallback } from 'grammy';
-import { bot } from './bot.js';
+import { bot, BOT_COMMANDS } from './bot.js';
 import { config } from './config.js';
 
 const WEBHOOK_PATH = '/telegram/webhook';
@@ -19,6 +19,7 @@ app.post(
 
 async function main() {
   await bot.init();
+  await bot.api.setMyCommands(BOT_COMMANDS);
 
   if (config.WEBHOOK_URL) {
     await bot.api.setWebhook(config.WEBHOOK_URL, {
