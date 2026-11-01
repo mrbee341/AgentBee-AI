@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { config } from '../config.js';
 
-export const MODEL_ID = 'anthropic/claude-3.5-sonnet';
+export const MODEL_ID = 'anthropic/claude-sonnet-4.6';
 const ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
 const REQUEST_TIMEOUT_MS = 45_000;
 const MAX_OUTPUT_TOKENS = 1024;
