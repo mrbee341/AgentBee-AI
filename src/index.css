@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: #0a0c0b;
+  }
+
+  body {
+    @apply font-mono text-paper antialiased;
+    font-feature-settings: 'calt' 1, 'liga' 0;
+  }
+
+  ::selection {
+    background-color: rgba(94, 232, 154, 0.25);
+    color: #e4ece6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
