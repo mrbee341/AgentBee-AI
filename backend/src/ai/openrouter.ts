@@ -69,7 +69,11 @@ export async function callModel(
     }),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
-  if (!response.ok) throw new Error(`OpenRouter request failed with status ${response.status}`);
+  if (!response.ok) {
+    const detail = (await response.text()).slice(0, 500);
+    console.error(`OpenRouter ${response.status} for model ${MODEL_ID}: ${detail}`);
+    throw new Error(`OpenRouter request failed with status ${response.status}`);
+  }
 
   const parsed = responseSchema.safeParse(await response.json());
   if (!parsed.success) throw new Error('OpenRouter returned an unexpected response');
